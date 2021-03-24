@@ -9,9 +9,8 @@ body {
 }
 
 .wrapper {
-  /* margin: 0 20%; */
-  min-height: 100vh;
-  padding: 0 20px;
+  padding: 20px;
+  height: calc(100vh - 40px);
 }
 
 .background_img {
@@ -32,11 +31,11 @@ body {
 .contents{
   color: #ccc;
   max-width: 1024px;
-  margin: 0 auto;
+  margin: 0px auto;
   background-color: rgba(25, 25, 25, .5);
-  box-shadow: 0 0 8px rgba(204, 204, 204, 0.3);
+  box-shadow: 0 0 8px rgba(204, 204, 204, 0.4);
   border-radius: 20px 20px;
-  min-height: 100vh;
+  height: calc(100vh - 40px);
 }
 
 .introduction{
