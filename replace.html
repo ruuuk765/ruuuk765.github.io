@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Replace</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+  <style>
+    @charset "utf-8";
+
+    body {
+      font-family: "Noto Sans JP", sans-serif;
+      color: #494949;
+      background-color: #fffaf5;
+      font-size: 20px;
+      margin-left: 50px;
+    }
+    input{
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h3>置換君</h3>
+  <input type="text" id="str" placeholder="文字列">
+  <input type="text" id="tar" placeholder="対象文字">
+  <input type="text" id="rep" placeholder="置換文字"><br>
+  <input type="text" id="res" placeholder="結果">
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  (() => {
+    "use strict";
+
+    $("#rep").on("focusout", () => {
+      let str = $('#str').val();
+      let tar = $('#tar').val();
+      let rep = $('#rep').val();
+      let res = str.replace(new RegExp(tar,'g'), rep);
+      $('#res').val(res);
+
+      //コピー
+      var textarea = document.getElementById("res");
+      textarea.select();
+      document.execCommand("copy");
+    });
+  })();
+</script>
+</html>
