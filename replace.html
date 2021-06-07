@@ -28,6 +28,7 @@
   <input type="text" id="tar" placeholder="対象文字">
   <input type="text" id="rep" placeholder="置換文字"><br>
   <input type="text" id="res" placeholder="結果">
+  <p id="msg"></p>
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -45,6 +46,7 @@
       var textarea = document.getElementById("res");
       textarea.select();
       document.execCommand("copy");
+      $('#msg').text('Copied !');
     });
   })();
 </script>
