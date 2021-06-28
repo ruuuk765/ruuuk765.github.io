@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,16 +13,19 @@
 
     body {
       font-family: "Noto Sans JP", sans-serif;
-      color: #494949;
-      background-color: #fffaf5;
       font-size: 20px;
       margin-left: 50px;
+      color: #ccc;
+      background-color: #333;
     }
-    input{
+
+    input {
       margin-right: 5px;
+      background-color: #ccc;
     }
   </style>
 </head>
+
 <body>
   <h3>置換君</h3>
   <input type="text" id="str" placeholder="文字列">
@@ -39,7 +43,7 @@
       let str = $('#str').val();
       let tar = $('#tar').val();
       let rep = $('#rep').val();
-      let res = str.replace(new RegExp(tar,'g'), rep);
+      let res = str.replace(new RegExp(tar, 'g'), rep);
       $('#res').val(res);
 
       //コピー
@@ -50,4 +54,5 @@
     });
   })();
 </script>
+
 </html>
