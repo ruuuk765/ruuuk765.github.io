@@ -8,11 +8,6 @@ body {
   font-size: 20px;
 }
 
-a {
-  margin-bottom: 24px;
-  display: block;
-}
-
 .wrapper {
   padding: 20px;
   height: calc(100vh - 40px);
@@ -44,5 +39,11 @@ a {
 }
 
 .introduction {
+  display: flex;
+  flex-flow: column;
   padding: 50px;
+}
+
+.introduction > div {
+  margin-bottom: 24px;
 }
