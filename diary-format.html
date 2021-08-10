@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test</title>
+  <style>
+    body {
+      background-color: #333;
+      color: #ccc;
+    }
+
+    input,
+    dl {
+      margin: 2%;
+    }
+    dd{
+      margin-bottom: 8px;
+    }
+
+    a {
+      color: #ccc;
+    }
+  </style>
+</head>
+
+<body>
+  <input type="file">
+  <hr size="1" color="#ccc">
+  <dl>
+    <dt>手順</dt><br>
+    <dd>1. <a href="https://takeout.google.com/" target="_blank">リンク</a>よりアカウントが正しいことを確認後「選択をすべて解除」、「Google Chat」のみを選択<br>
+      　「~\Takeout\Google Chat\Groups\Space AAAA58rZ3AA」が日記に該当</dd>
+    <dd>2. 当サイトのファイルを選択から「messages.json」を選択</dd>
+    <dd>3. クリップボードにコピーされる</dd>
+  </dl>
+  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script>
+    $(function () {
+      let reader;
+
+      function onChange(event) {
+        reader.readAsText(event.target.files[0]);
+      }
+
+      function onLoad(event) {
+        let res = '';
+        let data = JSON.parse(event.target.result);
+        data = data['messages'];
+
+        for (const row of data) {
+          let date = row.created_date.slice(0, -7);
+          res += date.replace(new RegExp(/.曜日/, 'g'), '(' + date.match(/.曜日/)[0].slice(0, 1) + ')') + '\n';
+          res += row.text + '\n\n';
+        }
+        copyTextToClipboard(res);
+        console.log(res);
+      }
+
+      reader = new FileReader();
+      reader.onload = onLoad;
+
+      $('input[type="file"]').on('change', onChange);
+
+
+      function copyTextToClipboard(textVal) {
+        // テキストエリアを用意する
+        let copyFrom = document.createElement("textarea");
+        // テキストエリアへ値をセット
+        copyFrom.textContent = textVal;
+
+        // bodyタグの要素を取得
+        let bodyElm = document.getElementsByTagName("body")[0];
+        // 子要素にテキストエリアを配置
+        bodyElm.appendChild(copyFrom);
+
+        // テキストエリアの値を選択
+        copyFrom.select();
+        // コピーコマンド発行
+        let retVal = document.execCommand('copy');
+        // 追加テキストエリアを削除
+        bodyElm.removeChild(copyFrom);
+        // 処理結果を返却
+        return retVal;
+      }
+    });
+  </script>
+</body>
+
+</html>
