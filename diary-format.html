@@ -48,13 +48,14 @@
       }
 
       function onLoad(event) {
+        const dayStr = ['日', '月', '火', '水', '木', '金', '土'];
+        let data = JSON.parse(event.target.result)['messages'];
         let res = '';
-        let data = JSON.parse(event.target.result);
-        data = data['messages'];
 
         for (const row of data) {
-          let date = row.created_date.slice(0, -7);
-          res += date.replace(new RegExp(/.曜日/, 'g'), '(' + date.match(/.曜日/)[0].slice(0, 1) + ')') + '\n';
+          let dateStr = row.created_date.replace(new RegExp(/.曜日/, 'g'), '');
+          let date = new Date(dateStr.replace('年', '/').replace('月', '/').replace('日', ' '));
+          res += date.getFullYear() + '/' + ("0" + (date.getMonth() + 1)).slice(-2) + '/' + ("0" + date.getDate()).slice(-2) + '(' + dayStr[date.getDay()] + ') ' + date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + '\n';
           res += row.text + '\n\n';
         }
         copyTextToClipboard(res);
