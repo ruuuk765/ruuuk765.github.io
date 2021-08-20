@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家計簿</title>
+  <style>
+    body {
+      background-color: #333;
+      color: #ccc;
+      margin: 60px;
+    }
+
+    /* トータル */
+    .total-money {
+      padding-left: 10px;
+    }
+
+    /* 明細 */
+    table {
+      border-collapse: collapse;
+      margin-top: -55px;
+    }
+
+    th,
+    td {
+      border: 1px solid rgba(255, 255, 255, .2);
+      padding: 5px 10px;
+      font-size: 14px;
+    }
+
+    th {
+      color: rgb(125, 172, 210);
+      background-color: #444;
+      font-weight: bold;
+      font-size: 15px !important;
+    }
+
+    .expensive {
+      background-color: rgb(74, 94, 111);
+    }
+
+    .container {
+      width: 700px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    #total {
+      width: 300px;
+    }
+
+    #file {
+      margin-bottom: 30px;
+    }
+
+    .flex {
+      display: flex;
+      width: 160px;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+
+<body>
+  <input type="file" name="file" id="file">
+  <div class="container">
+    <div id="total"></div>
+    <div id="meisai"></div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script>
+    const NAIYO = 2;
+    const KINGAKU = 4;
+
+    $('#file').on('click', function () {
+      $('#total').html('');
+      $('#meisai').html('');
+    });
+
+    $('#file').on('change', function (e) {
+      // FileReaderオブジェクトを使ってファイル読み込み
+      let reader = new FileReader();
+      reader.onload = function () {
+        const cols = reader.result.split('\n');
+        let data = [];
+        let foodCost = 0;
+        let gas = 0;
+        let subsc = 0;
+        let amazon = 0;
+        let other = 0;
+        let otherStr = '';
+
+        for (const col of cols) {
+          if (col.match(/"ﾃﾞﾋﾞｯﾄ"/)) continue;
+          data.push(col.split(','));
+        }
+        data.pop();
+
+        for (let i = 1; i < data.length - 1; i++) {
+          let naiyo = data[i][NAIYO];
+          let foodRegexp = /ﾍﾟｲﾍﾟｲ|ｻﾝｴｰ|ﾏｸﾄﾞﾅﾙﾄﾞ|ﾘｳﾎﾞｳ|ｴｲｱﾝﾄﾞ|ﾊﾞﾂｸｽ|ｶﾈﾋﾃﾞ|ｺ-ﾋ-ﾀｲﾑ|UBER|ｲｵﾝ|ﾏﾂｸｽﾊﾞﾘﾕ-|ﾓｽﾊﾞ-ｶﾞ-|ｺﾒﾀﾞｺｰﾋｰ|ｶﾂﾃﾞﾘ|ﾄﾞﾗﾂｸﾞｽﾄｱﾓﾘ|ｼﾞﾖｲﾌﾙ/;
+          let subscRegexp = /ﾗｸﾃﾝﾓﾊﾞｲﾙ|ﾈﾂﾄﾌﾘﾂｸｽﾄﾞﾂﾄｺﾑ|ｱﾏｿﾞﾝﾌﾟﾗｲﾑｶｲﾋ/;
+          if (naiyo.match(/ﾃﾞﾋﾞｯﾄ/)) continue;
+
+          if (naiyo.match(foodRegexp)) {
+            foodCost += toInt(data[i][KINGAKU]);
+          } else if (naiyo.match(/ﾏﾙｲｻﾝｷﾞﾖｳ ｶﾞｽ/)) {
+            gas += toInt(data[i][KINGAKU]);
+          } else if (naiyo.match(subscRegexp)) {
+            subsc += toInt(data[i][KINGAKU]);
+          } else if (naiyo.match(/AMAZON/)) {
+            amazon += toInt(data[i][KINGAKU]);
+          } else {
+            other += toInt(data[i][KINGAKU]);
+            otherStr += naiyo.replace(new RegExp('"', 'g'), '') + '<br>';
+          }
+        }
+        addTxt('食費', foodCost);
+        addTxt('ガス代', gas);
+        addTxt('サブスク費', subsc);
+        addTxt('Amazon', amazon);
+        addTxt('その他', other);
+        $('#total').append('<div style="display:flex;"><div style="width:40px;margin-left:15px;">詳細</div><div style="padding-left: 40px;">' + otherStr + '</div></div>');
+        $('#total').append('<hr size="1" color="#aaa">');
+        addTxt('合計', foodCost + amazon + other + subsc);
+
+        createTable(data);
+      }
+      reader.readAsText(e.target.files[0], 'Shift_JIS');
+    });
+
+
+    function createTable(data) {
+      let table = $('<table>');
+      let tarCol = [1, 2, 4];
+      for (let i = 0; i < data.length; i++) {
+        let tr = $('<tr></tr>').appendTo(table);
+        for (let j = 0; j < tarCol.length; j++) {
+          let td = 'td>';
+          if (i == 0) td = 'th>';
+          if (i != 0 && tarCol[j] == KINGAKU) {
+            if (toInt(data[i][tarCol[j]]) >= 2000) tr.addClass("expensive");
+            $('<' + td + toInt(data[i][tarCol[j]]).toLocaleString() + '円</' + td).appendTo(tr);
+          } else {
+            $('<' + td + data[i][tarCol[j]].replace(new RegExp('"', 'g'), '') + '</' + td).appendTo(tr);
+          }
+        }
+      }
+      $('#meisai').append(table);
+    }
+
+    function toInt(str) {
+      return parseInt(str.replace(new RegExp('"', 'g'), ''));
+    }
+    function addTxt(tit, money) {
+      if (money != 0)
+        $('#total').append('<div class="flex"><p>' + tit + '</p><p>' + money.toLocaleString() + '円</p></div>');
+    }
+  </script>
+</body>
+
+</html>
