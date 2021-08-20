@@ -10,7 +10,7 @@
     body {
       background-color: #333;
       color: #ccc;
-      margin: 60px;
+      margin-left: 60px;
     }
 
     /* トータル */
@@ -21,7 +21,7 @@
     /* 明細 */
     table {
       border-collapse: collapse;
-      margin-top: -55px;
+      margin-top: -120px;
     }
 
     th,
@@ -54,6 +54,7 @@
 
     #file {
       margin-bottom: 30px;
+      margin-top: 30px;
     }
 
     .flex {
@@ -61,11 +62,17 @@
       width: 160px;
       justify-content: space-between;
     }
+
+    #date {
+      font-size: 26px;
+      margin-bottom: 14px;
+    }
   </style>
 </head>
 
 <body>
   <input type="file" name="file" id="file">
+  <div id="date"></div>
   <div class="container">
     <div id="total"></div>
     <div id="meisai"></div>
@@ -136,8 +143,10 @@
 
 
     function createTable(data) {
+      $('#date').text(data[1][1].replace(new RegExp('"', 'g'), '').slice(0, -3));
       let table = $('<table>');
       let tarCol = [1, 2, 4];
+
       for (let i = 0; i < data.length; i++) {
         let tr = $('<tr></tr>').appendTo(table);
         for (let j = 0; j < tarCol.length; j++) {
