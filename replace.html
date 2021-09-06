@@ -36,23 +36,19 @@
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  (() => {
-    "use strict";
+  $("#rep").on("focusout", () => {
+    let str = $('#str').val();
+    let tar = $('#tar').val();
+    let rep = $('#rep').val();
+    let res = str.replace(new RegExp(tar, 'g'), rep);
+    $('#res').val(res);
 
-    $("#rep").on("focusout", () => {
-      let str = $('#str').val();
-      let tar = $('#tar').val();
-      let rep = $('#rep').val();
-      let res = str.replace(new RegExp(tar, 'g'), rep);
-      $('#res').val(res);
-
-      //コピー
-      let textarea = document.getElementById("res");
-      textarea.select();
-      document.execCommand("copy");
-      $('#msg').text('Copied !');
-    });
-  })();
+    //コピー
+    let textarea = document.getElementById("res");
+    textarea.select();
+    document.execCommand("copy");
+    $('#msg').text('Copied !');
+  });
 </script>
 
 </html>
