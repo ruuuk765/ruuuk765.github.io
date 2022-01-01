@@ -28,20 +28,28 @@
 </head>
 
 <body>
-  <input type="file">
+  <input type="file"><br>
+  <input type="text" id="startDate" style="margin: 0.5% 0.5% 2% 2%">開始する日付 例:2021-01
   <hr size="1" color="#ccc">
   <dl>
     <dt>手順</dt>
     <dd>1. <a href="https://takeout.google.com/" target="_blank"
-        rel="noopener noreferrer">リンク</a>よりアカウントが正しいことを確認後「選択をすべて解除」、「GoogleChat」のみを選択
+        rel="noopener noreferrer">リンク</a>よりアカウントが正しいことを確認後「選択をすべて解除」、「GoogleChat」のみを選択</dd>
     <dd>2. 当サイトのファイルを選択から「messages.json」を選択</dd>
     <dd>3. クリップボードにコピーされる</dd>
+  </dl>
+  <hr size="1" color="#ccc">
+  <dl>
+    <dt>出力</dt>
+    <dd id="output"></dd>
   </dl>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"
     integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script>
     let reader;
+    const today = new Date();
+    $("#startDate").val(today.getFullYear() + '-');
 
     function onChange(event) {
       reader.readAsText(event.target.files[0]);
@@ -55,10 +63,14 @@
       for (const row of data) {
         let dateStr = row.created_date.replace(new RegExp(/.曜日/, 'g'), '');
         let date = new Date(dateStr.replace('年', '/').replace('月', '/').replace('日', ' '));
+        const startDate = new Date($('#startDate').val());
+        if (date < startDate) continue;
+
         res += date.getFullYear() + '/' + ("0" + (date.getMonth() + 1)).slice(-2) + '/' + ("0" + date.getDate()).slice(-2) + '(' + dayStr[date.getDay()] + ') ' + date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + '\n';
         res += row.text + '\n\n';
       }
       copyTextToClipboard(res);
+      $('#output').html(res.replace(new RegExp(/\n/, 'g'), '<br>'));
       console.log(res);
     }
 
